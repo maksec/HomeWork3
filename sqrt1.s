@@ -1,0 +1,79 @@
+	.intel_syntax noprefix			# Intel синтаксис
+	.text					# начало секции text
+	.section	.rodata			# начало секции с константными значениями
+.LC0:
+	.string	"%lf"
+.LC6:
+	.string	"%lf\n"
+	.text					# начало секции text
+	.globl	main
+main:
+	push	rbp				# пролог функции (сохраняем rbp на стек)
+	mov	rbp, rsp			# rbp := rsp
+	sub	rsp, 32				# rsp -= 32 (выделяем память на стеке для работы в main под переменные)
+
+	lea	rax, -16[rbp]			# &a - торой аргумент (&a = rbp - 16)
+	mov	rsi, rax
+	lea	rdi, .LC0[rip]			# LC0 = "%lf" - первый аргумент
+	call	__isoc99_scanf@PLT		# scanf("%lf", &a)
+
+	movsd	xmm0, QWORD PTR .LC1[rip]
+	movsd	QWORD PTR -8[rbp], xmm0
+	jmp	.L2
+.L3:
+	movsd	xmm0, QWORD PTR -8[rbp]
+	movsd	xmm1, QWORD PTR .LC2[rip]
+	divsd	xmm0, xmm1
+	movapd	xmm1, xmm0
+	movsd	xmm0, QWORD PTR -16[rbp]
+	divsd	xmm0, QWORD PTR -8[rbp]
+	movsd	xmm2, QWORD PTR .LC2[rip]
+	divsd	xmm0, xmm2
+	addsd	xmm0, xmm1
+	movsd	QWORD PTR -8[rbp], xmm0
+.L2:
+	movsd	xmm0, QWORD PTR -8[rbp]
+	mulsd	xmm0, QWORD PTR -8[rbp]
+	movsd	xmm1, QWORD PTR -16[rbp]
+	divsd	xmm0, xmm1
+	movsd	xmm1, QWORD PTR .LC3[rip]
+	subsd	xmm0, xmm1
+	movq	xmm1, QWORD PTR .LC4[rip]
+	andpd	xmm0, xmm1
+	ucomisd	xmm0, QWORD PTR .LC5[rip]
+	jnb	.L3
+
+	mov	rax, QWORD PTR -8[rbp]		# &ans = rbp - 8 - второй аргумент
+	mov	QWORD PTR -24[rbp], rax
+	movsd	xmm0, QWORD PTR -24[rbp]
+	lea	rdi, .LC6[rip]			# LC6 = "%lf\n" - первый аргумент
+	mov	eax, 1
+	call	printf@PLT			# printf("%lf\n", ans)
+	mov	eax, 0
+
+	leave
+	ret
+
+	.section	.rodata			# начало секции с константными значениями
+	.align 8
+.LC1:
+	.long	0
+	.long	1083129856
+	.align 8
+.LC2:
+	.long	0
+	.long	1073741824
+	.align 8
+.LC3:
+	.long	0
+	.long	1072693248
+	.align 16
+.LC4:
+	.long	4294967295
+	.long	2147483647
+	.long	0
+	.long	0
+	.align 8
+.LC5:
+	.long	2696277389
+	.long	1049675511

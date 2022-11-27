@@ -8,7 +8,7 @@ int main() {
     while (fabs((ans * ans) / a - 1) >= 0.00000025) {
         ans = ans / 2 + (a / ans / 2);
     }
-    printf("%lf", ans);
+    printf("%lf\n", ans);
     return 0;
 }
   
